@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -eo nounset -o pipefail
 
 # Move plugins and add location to path (required for kubectl 1.12+)
 chmod +x ./kubectl-*
@@ -14,3 +16,4 @@ ex '+g/function kubectl()/d' -cwq ~/.bash_profile >/dev/null 2>&1
 # Finished
 echo -e "\nDone.\nPlease open a new terminal or run: source ~/.bash_profile\n"
 kubectl plugin list --name-only | sed 's|-| |g'
+

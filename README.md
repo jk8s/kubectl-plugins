@@ -16,5 +16,5 @@ source ~/.bash_profile
 ### kubectl eks config
 - This is useful for accessing EKS private cluster endpoint. It will pull cluster endpoint private IPs and configure your /etc/hosts so that you can resolve the EKS private cluster domain from your local workstation.
 ```bash
-kubectl eks config <eks-cluster-name>
+kubectl eks config <eks-cluster-name> <aws-profile (default: "default")>
 ```
