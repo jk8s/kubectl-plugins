@@ -1,13 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-clusterName=$1
+set -eo nounset -o pipefail
+
+clusterName="$1"
+awsProfile="${2:-default}"
 
 [ -z "$clusterName" ] && echo "Must provide EKS cluster name to first argument" && exit 123
 
-ips=`aws ec2  describe-network-interfaces --filters Name=description,Values="Amazon EKS $clusterName" | grep "PrivateIpAddress\"" | cut -d ":" -f 2 |  sed 's/[*",]//g' | sed 's/^\s*//'| uniq`
-endpoint=`aws eks describe-cluster --name $clusterName | grep endpoint\" | cut -d ":" -f 3 | sed 's/[\/,"]//g'`
-IFS=$'\n'
-
+ips="$(aws ec2  describe-network-interfaces --filters Name=description,Values="Amazon EKS $clusterName" | grep "PrivateIpAddress\"" | cut -d ":" -f 2 |  sed 's/[*",]//g' | sed 's/^\s*//'| uniq)"
+endpoint="$(aws eks describe-cluster --name "$clusterName" --profile "$awsProfile" | grep endpoint\" | cut -d ":" -f 3 | sed 's/[\/,"]//g')"
+IFS=$'\n' 
+           
 echo "Pulling EKS kubeconfig to local"
 
 echo "Creating backup of /etc/hosts"
@@ -20,4 +23,5 @@ do
 done
 
 echo "Updating cluster IP to /etc/hosts"
-sudo  sh -c "cat /etc/hosts_new > /etc/hosts"
+sudo sh -c "cat /etc/hosts_new > /etc/hosts"
+
